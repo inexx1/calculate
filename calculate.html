@@ -1,0 +1,161 @@
+<html>
+    <head>
+    <style type="text/css">
+/*
+
+ *{
+       padding:0px;
+        margin:1px;
+  }
+*/
+    #calculater{
+        
+        width: 400px; height: 500px;
+        position:absolute; left: 0; right: 0; 
+        margin: auto;  
+        border-spacing: 0;
+    }
+    #display{
+        background-color: gray;
+        height: 50px;
+        font-weight: bold;
+        color :white;
+        font-family: 黑体;
+        text-align: right;
+        font-size: 50px;
+    }
+    .numberkey{
+        cursor: pointer;
+        width: 40px;
+        height: 30px;
+        border: solid 1px grey;
+        background: white;
+        color: black;
+        text-align: center;
+        font-weight: bold;
+        font-family: 黑体;
+         font-size: 30px;
+    }
+    .calculatekey{
+       cursor: pointer;
+       width: 40px; 
+       height: 30px;
+       background:#EA6F30;
+        border: solid 1px grey;
+        color: #ffffff;
+        text-align: center;
+        font-weight: bold;
+        font-family: 黑体; 
+        font-size: 30px;
+    }
+    .numberkey:hover{
+       background: #EA6F30; 
+    }
+    
+
+</style>
+<script type="text/javascript">
+var result="";
+var judge="";
+var finalResult="";
+var lastkey="";
+var re1=/^[\+|\-|\*|\/]/;
+var re2=/[\+|\-|\*|\/]$/;
+
+var n=1;
+function calculater(){
+    n=1;
+    if(event.srcElement.innerText=="=")
+    {
+        result="";
+        return ;
+    }
+    if(event.srcElement.id=="display")
+    return;
+    /*
+    judge=event.srcElement.innerText;
+    if(lastkey=="=" && judge.match(re1)){
+           result=finalResult;
+        }*/
+    if (event.srcElement.innerText=="AC") {
+           
+            display.innerText="0";
+            result="";
+            finalResult="";
+            return;
+   }
+    if(event.srcElement.id=="backsign"){
+        if(result.length > 0){
+             n=0;
+        }
+        if(result.length ==0){
+             return; 
+        }
+        
+    } 
+    if(event.srcElement.innerText == "." && result == "") return ;
+    if(event.srcElement.innerText == "." && result.indexOf(".") != -1) return ;
+    if(event.srcElement.innerText.match(re1) &&result.lastIndexOf(result.match(re2))== result.length-1) 
+    result = result.substring(0,result.length-1);
+    result+=event.srcElement.innerText;
+    if(n==0)
+    {
+        result = result.substring(0,result.length-2);
+    }
+    display.innerText=result;
+    if(result.match(re1))
+    {
+        result=finalResult+result;
+    }
+    
+}
+function eqal(){
+    finalResult=eval(result);
+    display.innerText=finalResult;
+    lastkey="=";
+    result="";
+}
+
+
+
+
+</script>
+</head>
+<body>
+    <table id="calculater" onclick="calculater()">
+        <tr>
+            <td id="display" colspan="4">0</td>
+        </tr>
+        <tr>
+            <td class="numberkey" id="deletesign">AC</td>
+            <td class="numberkey" >(</td>
+            <td class="numberkey" >)</td>
+            <td class="calculatekey" >/</td>
+        </tr>
+        <tr>
+            <td class="numberkey" >7</td>
+            <td class="numberkey" >8</td>
+            <td class="numberkey" >9</td>
+            <td class="calculatekey" >*</td>
+        </tr>
+        <tr>
+            <td class="numberkey" >4</td>
+            <td class="numberkey" >5</td>
+            <td class="numberkey" >6</td>
+            <td class="calculatekey" >-</td>
+        </tr>
+        <tr >
+            <td class="numberkey" >1</td>
+            <td class="numberkey" >2</td>
+            <td class="numberkey" >3</td>
+            <td class="calculatekey" >+</td>            
+        </tr>
+        <tr >
+            <td class="numberkey" >0</td>
+            <td class="numberkey" >.</td>
+            <td class="numberkey" id="backsign" onclick="back()" >b</td>
+            <td class="calculatekey"  onclick="eqal()" >=</td>            
+        </tr>
+
+</body>
+</html>
