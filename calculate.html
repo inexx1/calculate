@@ -1,155 +1,130 @@
 <!DOCTYPE html>
 <html>
-    <head>
+  <head>
     <style type="text/css">
-    #calculater{
-        
-        width: 400px; height: 500px;
-        position:absolute; left: 0; right: 0; 
-        margin: auto;  
-        border-spacing: 0;
-    }
-    #display{
-        background-color: gray;
-        height: 50px;
-        font-weight: bold;
-        color :white;
-        font-family: 黑体;
-        text-align: right;
-        font-size: 50px;
-    }
-    .numberkey{
+      .numberkey{
         cursor: pointer;
-        width: 40px;
-        height: 30px;
-        border: solid 1px grey;
-        background: white;
+        width: 100px;
+        height: 70px;
+        background: #ffffff;
         color: black;
         text-align: center;
         font-weight: bold;
         font-family: 黑体;
-         font-size: 30px;
-    }
-    .calculatekey{
-       cursor: pointer;
-       width: 40px; 
-       height: 30px;
-       background:#EA6F30;
-        border: solid 1px grey;
+        font-size: 30px;
+        margin: 2px 2px;
+        border-width: 0px;
+        padding: 0px;
+      }
+      .calculatekey{
+        cursor: pointer;
+        width: 100px;
+        height: 70px;
+        background: #EA6F30;
         color: #ffffff;
         text-align: center;
         font-weight: bold;
-        font-family: 黑体; 
+        font-family: 黑体;
         font-size: 30px;
-    }
-    .numberkey:hover{
-       background: #EA6F30; 
-    }
-    
-
-</style>
-<script type="text/javascript">
-var result="";
-var judge="";
-var finalResult="";
-var lastkey="";
-var re1=/^[\+|\-|\*|\/]/;
-var re2=/[\+|\-|\*|\/]$/;
-
-var n=1;
-function calculater(){
-    n=1;
-    if(event.srcElement.innerText=="=")
-    {
-        result="";
-        return ;
-    }
-    if(event.srcElement.id=="display")
-    return;
-    /*
-    judge=event.srcElement.innerText;
-    if(lastkey=="=" && judge.match(re1)){
-           result=finalResult;
-        }*/
-    if (event.srcElement.innerText=="AC") {
-           
-            display.innerText="0";
-            result="";
-            finalResult="";
-            return;
-   }
-    if(event.srcElement.id=="backsign"){
-        if(result.length > 0){
-             n=0;
-        }
-        if(result.length ==0){
-             return; 
-        }
-        
-    } 
-    if(event.srcElement.innerText == "." && result == "") return ;
-    if(event.srcElement.innerText == "." && result.indexOf(".") != -1) return ;
-    if(event.srcElement.innerText.match(re1) &&result.lastIndexOf(result.match(re2))== result.length-1) 
-    result = result.substring(0,result.length-1);
-    result+=event.srcElement.innerText;
-    if(n==0)
-    {
-        result = result.substring(0,result.length-2);
-    }
-    display.innerText=result;
-    if(result.match(re1))
-    {
-        result=finalResult+result;
-    }
-    
-}
-function eqal(){
-    finalResult=eval(result);
-    display.innerText=finalResult;
-    lastkey="=";
-    result="";
-}
-
-
-
-
-</script>
-</head>
-<body>
-    <table id="calculater" onclick="calculater()">
-        <tr>
-            <td id="display" colspan="4">0</td>
-        </tr>
-        <tr>
-            <td class="numberkey" id="deletesign">AC</td>
-            <td class="numberkey" >(</td>
-            <td class="numberkey" >)</td>
-            <td class="calculatekey" >/</td>
-        </tr>
-        <tr>
-            <td class="numberkey" >7</td>
-            <td class="numberkey" >8</td>
-            <td class="numberkey" >9</td>
-            <td class="calculatekey" >*</td>
-        </tr>
-        <tr>
-            <td class="numberkey" >4</td>
-            <td class="numberkey" >5</td>
-            <td class="numberkey" >6</td>
-            <td class="calculatekey" >-</td>
-        </tr>
-        <tr >
-            <td class="numberkey" >1</td>
-            <td class="numberkey" >2</td>
-            <td class="numberkey" >3</td>
-            <td class="calculatekey" >+</td>            
-        </tr>
-        <tr >
-            <td class="numberkey" >0</td>
-            <td class="numberkey" >.</td>
-            <td class="numberkey" id="backsign" onclick="back()" >b</td>
-            <td class="calculatekey"  onclick="eqal()" >=</td>            
-        </tr>
-
-</body>
+        margin: 2px 2px;
+        border-width: 0px;
+        padding: 0px;
+      }
+      .key {
+        background-color: #808080;
+        width: 416px;
+        padding: 0px;
+        font-size: 0px;
+      }
+      .numberkey:hover {
+        background: #EA6F30;
+      }
+      .first-area{
+        margin-bottom: -5px;
+        background-color: gray;
+        height: 100px;
+        width: 416px;
+        font-weight: bold;
+        color: white;
+        font-family: 黑体;
+        text-align: right;
+        font-size: 40px;
+        border: 0px gray;
+      }
+      .second-area{
+        margin-top: -5px;
+        background-color: gray;
+        height: 100px;
+        width: 416px;
+        font-weight: bold;
+        color: white;
+        font-family: 黑体;
+        text-align: right;
+        font-size: 40px;
+        border: 0px gray;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div>
+        <input type="text"  class="second-area" value=" " readonly>
+      </div>
+      <div>
+        <input type="text"  class="first-area" value=" " readonly>
+      </div>
+      <div class="key" id="calculater">
+        <div>
+          <button class="numberkey" onclick="getResult('AC')">AC
+          </button>
+          <button class="numberkey" onclick="getResult('(')">(
+          </button>
+          <button class="numberkey" onclick="getResult(')')">)
+          </button>
+          <button class="calculatekey" onclick="getResult('/')">/
+          </button>
+        </div>
+        <div>
+          <button class="numberkey" onclick="getResult('7')">7
+          </button>
+          <button class="numberkey" onclick="getResult('8')">8
+          </button>
+          <button class="numberkey" onclick="getResult('9')">9
+          </button>
+          <button class="calculatekey" onclick="getResult('*')">*
+          </button>
+        </div>
+        <div>
+          <button class="numberkey" onclick="getResult('4')">4
+          </button>
+          <button class="numberkey" onclick="getResult('5')">5
+          </button>
+          <button class="numberkey" onclick="getResult('6')">6
+          </button>
+          <button class="calculatekey" onclick="getResult('-')">-
+          </button>
+        </div>
+        <div>
+          <button class="numberkey" onclick="getResult('1')">1
+          </button>
+          <button class="numberkey" onclick="getResult('2')">2
+          </button>
+          <button class="numberkey" onclick="getResult('3')">3
+          </button>
+          <button class="calculatekey" onclick="getResult('+')">+
+          </button>
+        </div>
+        <div>
+          <button class="numberkey" onclick="getResult('0')">0
+          </button>
+          <button class="numberkey" onclick="getResult('.')">.
+          </button>
+          <button class="numberkey" onclick="getResult('b')">b
+          </button>
+          <button class="calculatekey" onclick="getResult('=')">=</button>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="calculate.js"></script>
+  </body>
 </html>
