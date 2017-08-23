@@ -1,7 +1,10 @@
 var sourceArray = [];
 var formatArray = [];
+var backExpreArray = [];
 var firstArea = document.getElementsByClassName('first-area')[0];
 var secondArea = document.getElementsByClassName('second-area')[0];
+var request = {};
+var response = {};
 function formatSource(str) {
   re=/[/+-/*//()]|[0-9.]+/g;
   str = str.replace(/\(-/g,"(0-");
@@ -13,7 +16,6 @@ function standCheck(varArray) {
   var res = /[.]/g;
  // var reb = /[/+-/*//]?\(-?[0-9.]+([/+-/*//]?-?[0-9.]+)*\)[/+-/*//]?/g;
   var reb = /\(\)|\(([/+-/*//][0-9.]+)|\(([0-9.]+[/+-/*//])\)|([0-9.]+\()|([0-9.]+\)[0-9.]+)|\)\(/g;
-  var pointNumber = -1;
   var leftBracketNumber = -1;
   var rightBracketNumber = -1;
   for (var i = 0;i < varArray.length;++i) {
@@ -33,7 +35,6 @@ function standCheck(varArray) {
     } else if (pointArray.length === 1) {
       if(!isNaN(parseFloat(varArray[i]))) {
         varArray[i]=String(parseFloat(varArray[i]));
-        console.log(varArray[i]);
         continue;
       }
       else {
@@ -52,6 +53,29 @@ function standCheck(varArray) {
     return false;
   }
   return true;
+}
+
+function checkBackExpre(backExpreArray) {
+  var backStack = new Array();
+  for (var i = 0;i < backExpreArray.length;++i) {
+    if (isOperator(backExpreArray[i])) {
+      if (backStack.pop() !== undefined && backStack.pop() !== undefined) {
+        backStack.push('X');
+        continue;
+      } else {
+        return false;
+      }
+    } else if (!isNaN(parseFloat(backExpreArray[i])) || backExpreArray[i] === 'X') {
+      backStack.push('X');
+      continue;
+    } else {
+      return false;
+    }
+  }
+  if (backStack.length === 1 && !isOperator(backExpreArray[i])) {
+    return true;
+  }
+  return false;
 }
 
 function isNumber(str) {
@@ -114,53 +138,65 @@ function onError() {
 }
 
 function icp(elem) {
-  var v = 0;
+  var expLevel = 0;
   switch (elem) {
-  case '+':
-      v =  2;
+    case '+': {
+      expLevel = 2;
       break;
-  case '-':
-      v = 2;
+    } 
+    case '-': {
+      expLevel = 2;
       break;
-  case '*':
-      v = 4;
+    } 
+    case '*':{
+      expLevel = 4;
       break;
-  case '/':
-      v = 4;
+    }
+    case '/':{
+      expLevel = 4;
+      break; 
+    }
+    case '(':{
+      expLevel = 7;
       break;
-  case '(':
-      v = 7;
+    } 
+    case ')':{
+      expLevel = 1;
       break;
-  case ')':
-      v = 1;
-      break;
+    }
   }
-  return v;
+  return expLevel;
 }
 
 function isp (elem) {
-  var v = 0;
+  var expLevel = 0;
   switch (elem) {
-  case '+':
-      v = 3;
+    case '+': {
+      expLevel = 3;
       break;
-  case '-':
-      v = 3;
+    } 
+    case '-': {
+      expLevel = 3;
       break;
-  case '*':
-      v = 5;
+    } 
+    case '*':{
+      expLevel = 5;
       break;
-  case '/':
-      v = 5;
+    }
+    case '/':{
+      expLevel = 5;
       break; 
-  case '(':
-      v = 1;
+    }
+    case '(':{
+      expLevel = 1;
       break;
-  case ')':
-      v = 7;
+    } 
+    case ')':{
+      expLevel = 7;
       break;
+    }
   }
-  return v;
+  return expLevel;
 }
 
 function getBackExpre(varArray) {
@@ -191,6 +227,65 @@ function getBackExpre(varArray) {
   return list;
 }
 
+function stackCalculate(valueA,valueB,backExpreOperator) {
+  var stackResult = 0;
+  valueA = parseFloat(valueA);
+  valueB = parseFloat(valueB);
+  switch (backExpreOperator) {
+    case '+': {
+      stackResult = valueA + valueB;
+      break;
+    }
+    case '-': {
+      stackResult = valueA - valueB;
+      break;
+    }
+    case '*': {
+      stackResult = valueA * valueB;
+      break;
+    }
+    case '/': {
+      stackResult = valueA / valueB;
+      break;
+    }
+  }
+  return stackResult;
+}
+
+function getCalculateResult(varBackArray) {
+  var printResult = new Array();
+  for (var i = 0;i < varBackArray.length;++i){
+    if (!isNaN(varBackArray[i])) {
+      printResult.push(varBackArray[i]);
+    } else {
+      var numB = printResult.pop();
+      var numA = printResult.pop();
+      var stackResult=stackCalculate(numA,numB,varBackArray[i]);
+      printResult.push(stackResult);
+    }
+  }
+  return printResult.pop();
+}
+
+function calc(str) {
+  if (checkBackExpre(getBackExpre(formatArray)) === true) {
+    result = {
+      "result": {
+        "resultCode": 200 ,
+        "value": getCalculateResult(JSON.parse(str).calculate.expression)
+      }
+    }
+  } else {
+    result = {
+      "result": {
+        "resultCode": 400 ,
+        "value": null
+      }
+    }
+  }
+  return JSON.stringify(result);
+}
+
 function getResult(str) {
   if (str === 'AC') {
     onClear();
@@ -214,30 +309,45 @@ function getResult(str) {
     sourceArray.pop();
     firstArea.value = sourceArray.join("");
   } else if (isOperator(str)) {
-      if (isOperator(sourceArray[sourceArray.length-1])) {
-        sourceArray.pop();
-        sourceArray.push(str);
-        firstArea.value = sourceArray.join("");
-      } else {
-        sourceArray.push(str);
-        firstArea.value = sourceArray.join("");
-      }
-    } else if (str === ')' && sourceArray.indexOf('(') === -1) {
-      sourceArray.push(str);
+    if (isOperator(sourceArray[sourceArray.length-1])) {
       sourceArray.pop();
+      sourceArray.push(str);
       firstArea.value = sourceArray.join("");
-    } else if (isBrackets(str)) {
-        sourceArray.push(str);
-        firstArea.value = sourceArray.join("");
-    } else if (str === '=') {
-      if (standCheck(formatSource(firstArea.value))) {
-      console.log(getBackExpre(formatArray));
-      formatArray=[];
-      //shuchu
+    } else {
+      sourceArray.push(str);
+      firstArea.value = sourceArray.join("");
+    }
+  } else if (str === ')' && sourceArray.indexOf('(') === -1) {
+    sourceArray.push(str);
+    sourceArray.pop();
+    firstArea.value = sourceArray.join("");
+  } else if (isBrackets(str)) {
+    sourceArray.push(str);
+    firstArea.value = sourceArray.join("");
+  } else if (str === '=') {
+    if (standCheck(formatSource(firstArea.value))) {
+      if (checkBackExpre(getBackExpre(formatArray)) === true) {
+        request = {
+          "calculate": {
+            "expression": getBackExpre(formatArray),
+            "config": {}
+          }
+        }
+        response = JSON.parse(calc(JSON.stringify(request)));
+        secondArea.value = formatSource(firstArea.value).join('') + '=';
+        firstArea.value = response.result.value;
+        sourceArray = [];
+        formatArray = [];
+        backExpreArray = [];
+        response = {};
+        request = {};
       } else {
-      onError();
+        onError();
       }
     } else {
     onError();
     }
+  } else {
+  onError();
+  }
 }
